@@ -9,4 +9,8 @@
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ACME transfer</name>
+
+  <modules>
+    <module>legacy-core-sdk</module>
+  </modules>
 </project>
