@@ -1,0 +1,12 @@
+{"lineId":"L1","idempotencyKey":"batch-sample-0001","sourceAccount":"2000000001","destinationAccount":"2000000002","amount":"25.00","currency":"USD","description":"Batch 1"}
+{"lineId":"L2","idempotencyKey":"batch-sample-0002","sourceAccount":"2000000001","destinationAccount":"1000000002","amount":"150.00","currency":"USD","description":"Batch 2"}
+{"lineId":"L3","idempotencyKey":"batch-sample-0003","sourceAccount":"1000000001","destinationAccount":"1000000002","amount":"1250000.00","currency":"IDR"}
+{"lineId":"L4","idempotencyKey":"batch-sample-0004","sourceAccount":"3000000001","destinationAccount":"1000000003","amount":"80.00","currency":"SGD"}
+{"lineId":"L5","idempotencyKey":"batch-sample-0005","sourceAccount":"2000000003","destinationAccount":"2000000007","amount":"10.00","currency":"USD"}
+{"lineId":"L6","idempotencyKey":"batch-sample-0006","sourceAccount":"2000000011","destinationAccount":"2000000002","amount":"50.00","currency":"USD"}
+{"lineId":"L7","idempotencyKey":"batch-sample-0007","sourceAccount":"2000000004","destinationAccount":"2000000005","amount":"5000.66","currency":"USD"}
+this line is not JSON
+{"lineId":"L9","idempotencyKey":"batch-sample-0009","sourceAccount":"2000000001","destinationAccount":"2000000005","amount":"30.00","currency":"USD","description":"Batch 9"}
+{"lineId":"L10","idempotencyKey":"batch-sample-0002","sourceAccount":"2000000001","destinationAccount":"1000000002","amount":"150.00","currency":"USD","description":"Batch 2"}
+{"lineId":"L11","idempotencyKey":"batch-sample-0011","sourceAccount":"1000000004","destinationAccount":"3000000004","amount":"5000000.00","currency":"IDR"}
+{"lineId":"L12","idempotencyKey":"batch-sample-0012","sourceAccount":"2000000006","destinationAccount":"1000000006","amount":"-5.00","currency":"USD"}

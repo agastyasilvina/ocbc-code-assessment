@@ -12,5 +12,6 @@
 
   <modules>
     <module>legacy-core-sdk</module>
+    <module>mock-bank</module>
   </modules>
 </project>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACME Transfers console</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>ACME Transfers <span>operations console</span></h1>
+  <div id="health" class="badge neutral">Service: checking…</div>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>New transfer</h2>
+    <form id="transfer-form" autocomplete="off">
+      <label>Source account <input name="sourceAccount" value="2000000001"></label>
+      <label>Destination account <input name="destinationAccount" value="1000000002"></label>
+      <label>Amount <input name="amount" value="150.00"></label>
+      <label>Currency
+        <select name="currency">
+          <option>USD</option>
+          <option>IDR</option>
+          <option>SGD</option>
+        </select>
+      </label>
+      <label class="wide">Description <input name="description" value="Invoice 42"></label>
+      <label class="wide">Idempotency-Key
+        <span class="inline"><input name="idempotencyKey" id="idempotency-key"><button type="button" id="new-key">New key</button></span>
+      </label>
+      <div class="actions wide">
+        <button type="submit">Send</button>
+        <button type="button" id="send-again" disabled>Send again (same key)</button>
+        <button type="button" id="send-five">Send 5 at once (same key)</button>
+      </div>
+    </form>
+    <p class="hint">Account numbers have 10 digits. The first digit is the currency (1 IDR, 2 USD, 3 SGD).
+      A last digit of 7 is dormant, 8 is blocked, 9 does not exist, and numbers ending 11 have 10.00 available.
+      At or above the fraud-check threshold, amounts ending .66 are denied and .77 go to review.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Responses <button type="button" class="small" id="clear-responses">Clear</button></h2>
+    <div class="row">
+      <input id="lookup-id" placeholder="Transfer ID">
+      <button type="button" id="lookup">Look up</button>
+    </div>
+    <div id="responses" class="cards"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Live feed</h2>
+    <div class="row">
+      <input id="feed-filter" placeholder="Source account (optional)">
+      <button type="button" id="feed-connect">Connect</button>
+      <span id="feed-state" class="badge neutral">Not connected</span>
+    </div>
+    <p id="feed-heartbeat" class="muted"></p>
+    <ol id="feed" class="feed"></ol>
+  </section>
+
+  <section class="panel">
+    <h2>Batch</h2>
+    <div class="row">
+      <input type="file" id="batch-file" accept=".ndjson,.jsonl,.txt">
+      <button type="button" id="batch-send">Upload</button>
+      <button type="button" id="batch-stop" disabled>Stop</button>
+      <a href="samples/batch-sample.ndjson" download>Sample file</a>
+    </div>
+    <p id="batch-summary" class="muted"></p>
+    <div id="batch-error"></div>
+    <table class="results">
+      <thead><tr><th>Line</th><th>HTTP</th><th>Result</th><th>Transfer</th><th>ms</th></tr></thead>
+      <tbody id="batch-results"></tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Core ledger
+      <button type="button" class="small" id="ledger-refresh">Refresh</button>
+      <label class="small"><input type="checkbox" id="ledger-auto"> every 2 s</label>
+    </h2>
+    <p id="ledger-sessions" class="muted">Press Refresh to read the mock bank.</p>
+    <div id="ledger-warnings"></div>
+    <table class="results">
+      <thead><tr><th>Reference</th><th>Core postings</th><th>Service says</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Chaos presets</h2>
+    <div id="presets" class="presets"></div>
+    <p id="chaos-state" class="muted"></p>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
