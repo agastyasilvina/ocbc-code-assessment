@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 public class TransferService {
 
   private final AccountClient accountClient;
+  private final FxService fxService;
   private final CoreBankingClient coreBankingClient;
   private final TransferRepository transferRepository;
   private final R2dbcEntityTemplate template;
@@ -63,10 +64,8 @@ public class TransferService {
     if (source.available().compareTo(amount) < 0) {
       return save(transferId, request, amount, null, "REJECTED", "INSUFFICIENT_FUNDS", null);
     }
-    if (!source.currency().equals(destination.currency())) {
-      return save(transferId, request, amount, null, "REJECTED", "CURRENCY_MISMATCH", null);
-    }
-    return post(transferId, request, amount, new Conversion(amount, destination.currency(), null));
+    return fxService.convert(amount, source.currency(), destination.currency())
+        .flatMap(conversion -> post(transferId, request, amount, conversion));
   }
 
   private Mono<TransferEntity> post(String transferId, TransferRequest request, BigDecimal amount,

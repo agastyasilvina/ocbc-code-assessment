@@ -18,5 +18,6 @@ spring:
 
 acme:
   accounts-url: http://localhost:9090
+  fx-url: http://localhost:9090
   core-url: http://localhost:9090
   core-read-timeout-ms: 2000
