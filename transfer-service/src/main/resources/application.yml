@@ -19,5 +19,10 @@ spring:
 acme:
   accounts-url: http://localhost:9090
   fx-url: http://localhost:9090
+  fraud-url: http://localhost:9090
   core-url: http://localhost:9090
   core-read-timeout-ms: 2000
+  fraud-threshold:
+    idr: 75000000.00
+    usd: 5000.00
+    sgd: 6500.00

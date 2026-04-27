@@ -25,6 +25,7 @@ public class TransferService {
 
   private final AccountClient accountClient;
   private final FxService fxService;
+  private final FraudService fraudService;
   private final CoreBankingClient coreBankingClient;
   private final TransferRepository transferRepository;
   private final R2dbcEntityTemplate template;
@@ -65,7 +66,12 @@ public class TransferService {
       return save(transferId, request, amount, null, "REJECTED", "INSUFFICIENT_FUNDS", null);
     }
     return fxService.convert(amount, source.currency(), destination.currency())
-        .flatMap(conversion -> post(transferId, request, amount, conversion));
+        .flatMap(conversion -> fraudService.check(transferId, request, amount)
+            .flatMap(decision -> switch (decision) {
+              case "DENY" -> save(transferId, request, amount, conversion, "REJECTED", "FRAUD_DENIED", null);
+              case "REVIEW" -> save(transferId, request, amount, conversion, "PENDING_REVIEW", "FRAUD_REVIEW", null);
+              default -> post(transferId, request, amount, conversion);
+            }));
   }
 
   private Mono<TransferEntity> post(String transferId, TransferRequest request, BigDecimal amount,
