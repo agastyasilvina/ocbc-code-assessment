@@ -3,6 +3,7 @@ package com.acme.transfer.controller;
 import com.acme.transfer.dto.TransferRequest;
 import com.acme.transfer.dto.TransferResource;
 import com.acme.transfer.repository.TransferEntity;
+import com.acme.transfer.service.IdempotencyService;
 import com.acme.transfer.service.TransferService;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,16 +31,28 @@ public class TransferController {
   private static final Set<String> CURRENCIES = Set.of("IDR", "USD", "SGD");
 
   private final TransferService transferService;
+  private final IdempotencyService idempotencyService;
 
   @PostMapping
-  public Mono<ResponseEntity<Object>> createTransfer(@RequestBody TransferRequest request) {
-    log.info("Transfer request: {}", request);
+  public Mono<ResponseEntity<Object>> createTransfer(
+      @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+      @RequestBody TransferRequest request) {
+    log.info("Transfer request {}: {}", idempotencyKey, request);
     String error = validate(request);
     if (error != null) {
       return Mono.just(ResponseEntity.badRequest().body(Map.of("error", error)));
     }
-    return transferService.createTransfer(request)
-        .map(this::toResponse)
+    if (idempotencyKey == null) {
+      return transferService.createTransfer(request).map(this::toResponse);
+    }
+    return idempotencyService.findExisting(idempotencyKey)
+        .map(existing -> ResponseEntity.status(existing.responseStatus())
+            .body((Object) idempotencyService.readResponse(existing)))
+        .switchIfEmpty(Mono.defer(() -> transferService.createTransfer(request)
+            .map(this::toResponse)
+            .flatMap(response -> idempotencyService.save(idempotencyKey, request,
+                    response.getStatusCode().value(), (TransferResource) response.getBody())
+                .thenReturn(response))))
         .onErrorMap(e -> !(e instanceof ResponseStatusException),
             e -> new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage(), e))
         .doOnError(e -> ResponseEntity.internalServerError().body(Map.of("error", e.getMessage())));
