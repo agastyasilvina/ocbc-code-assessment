@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: transfers
+      POSTGRES_USER: transfers
+      POSTGRES_PASSWORD: transfers
+    ports:
+      - "5432:5432"
+
+  mock-bank:
+    build: ./mock-bank
+    ports:
+      - "9090:9090"
+
+  transfer-service:
+    build:
+      context: .
+      dockerfile: transfer-service/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - mock-bank
+
+  web-client:
+    build: ./web-client
+    ports:
+      - "8081:8081"
+    depends_on:
+      - transfer-service
