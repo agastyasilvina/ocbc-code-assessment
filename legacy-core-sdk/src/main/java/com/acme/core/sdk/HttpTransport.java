@@ -16,16 +16,15 @@ import java.util.Optional;
 /** HTTP calls to the core. One attempt per call: the SDK never retries. */
 final class HttpTransport {
 
-  private static final int CONNECT_TIMEOUT_MS = 500;
   private static final String SESSION_HEADER = "X-Core-Session";
 
   private final String baseUrl;
-  private final int readTimeoutMs;
+  private final SdkTimeouts timeouts;
   private final ObjectMapper json = new ObjectMapper();
 
-  HttpTransport(CoreBankingConfig config) {
-    this.baseUrl = config.baseUrl();
-    this.readTimeoutMs = config.readTimeoutMs();
+  HttpTransport(String baseUrl, SdkTimeouts timeouts) {
+    this.baseUrl = baseUrl;
+    this.timeouts = timeouts;
   }
 
   String openSession() {
@@ -84,8 +83,8 @@ final class HttpTransport {
       throws IOException {
     HttpURLConnection connection =
         (HttpURLConnection) URI.create(baseUrl + path).toURL().openConnection();
-    connection.setConnectTimeout(CONNECT_TIMEOUT_MS);
-    connection.setReadTimeout(readTimeoutMs);
+    connection.setConnectTimeout(timeouts.connectMillis());
+    connection.setReadTimeout(timeouts.readMillis());
     connection.setRequestMethod(method);
     connection.setRequestProperty("Accept", "application/json");
     if (sessionId != null) {

@@ -17,12 +17,14 @@ import java.util.Optional;
  */
 public final class CoreBankingClient {
 
-  private final CoreBankingConfig config;
+  private final String baseUrl;
+  private final SdkTimeouts timeouts;
   private final HttpTransport transport;
 
   private CoreBankingClient(CoreBankingConfig config) {
-    this.config = config;
-    this.transport = new HttpTransport(config);
+    this.baseUrl = config.baseUrl();
+    this.timeouts = SdkTimeouts.from(config);
+    this.transport = new HttpTransport(baseUrl, timeouts);
   }
 
   /** Creates a client. Nothing is sent to the core until the first call. */
@@ -75,8 +77,8 @@ public final class CoreBankingClient {
         return result;
       } catch (SocketTimeoutException e) {
         throw new CoreTimeoutException(
-            operation + ": no response from " + config.baseUrl() + " within "
-                + config.readTimeoutMs() + " ms", e);
+            operation + ": no response from " + baseUrl + " within "
+                + timeouts.readMillis() + " ms", e);
       } catch (IOException e) {
         session.close();
         throw new CoreTimeoutException(operation + ": connection lost, outcome unknown", e);
