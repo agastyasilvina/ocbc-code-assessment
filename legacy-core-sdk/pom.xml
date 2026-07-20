@@ -11,7 +11,7 @@
   <description>Blocking client for the ACME core banking system</description>
 
   <properties>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.21.4</jackson.version>
     <junit.version>5.12.2</junit.version>
