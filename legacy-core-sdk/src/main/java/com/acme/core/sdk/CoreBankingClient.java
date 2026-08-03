@@ -2,6 +2,9 @@ package com.acme.core.sdk;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -61,6 +64,22 @@ public final class CoreBankingClient {
     Objects.requireNonNull(reference, "reference");
     return withSession("GET /core/postings",
         session -> transport.findPosting(session.id(), reference));
+  }
+
+  /**
+   * Looks up several postings with one session.
+   *
+   * <p>Draft: not reviewed. Do not use.
+   */
+  public Map<String, Optional<PostingResult>> inquireBatch(List<String> references) {
+    Objects.requireNonNull(references, "references");
+    return withSession("GET /core/postings", session -> {
+      Map<String, Optional<PostingResult>> results = new LinkedHashMap<>();
+      for (String reference : references) {
+        results.put(reference, transport.findPosting(session.id(), reference));
+      }
+      return results;
+    });
   }
 
   private <T> T withSession(String operation, SessionCall<T> call) {
