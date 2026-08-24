@@ -4,6 +4,8 @@ An operations console for the transfer service. It shows what the service does, 
 
 Open http://localhost:8081 after `docker compose up --build`.
 
+Do not change this module: when we evaluate your work, we use our own copy of it.
+
 ## Panels
 
 - **New transfer**: sends `POST /api/v1/transfers` with a generated `Idempotency-Key`. *Send again (same key)* repeats the last request; *Send 5 at once (same key)* sends five identical requests in parallel.
